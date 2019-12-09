@@ -6,7 +6,7 @@ import {
   DefaultComputed,
   PropsDefinition
 } from "./options";
-
+// 对外暴露Vue命名空间的版本
 // Expose some types for backword compatibility...
 declare namespace Vue {
   // vue.d.ts

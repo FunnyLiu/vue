@@ -15,7 +15,7 @@ export type Component<Data=DefaultData<never>, Methods=DefaultMethods<never>, Co
 interface EsModuleComponent {
   default: Component
 }
-
+//  异步组件和动态组件
 export type AsyncComponent<Data=DefaultData<never>, Methods=DefaultMethods<never>, Computed=DefaultComputed, Props=DefaultProps>
   = AsyncComponentPromise<Data, Methods, Computed, Props>
   | AsyncComponentFactory<Data, Methods, Computed, Props>
@@ -61,9 +61,11 @@ export type ThisTypedComponentOptionsWithRecordProps<V extends Vue, Data, Method
   ThisType<CombinedVueInstance<V, Data, Methods, Computed, Readonly<Props>>>;
 
 type DefaultData<V> =  object | ((this: V) => object);
+//默认props的key为string类型，但值不做校验
 type DefaultProps = Record<string, any>;
 type DefaultMethods<V> =  { [key: string]: (this: V, ...args: any[]) => any };
 type DefaultComputed = { [key: string]: any };
+// 所有传入的options
 export interface ComponentOptions<
   V extends Vue,
   Data=DefaultData<V>,
@@ -143,11 +145,11 @@ export interface RenderContext<Props=DefaultProps> {
   scopedSlots: { [key: string]: NormalizedScopedSlot };
   injections: any
 }
-
+// { (): T }意为返回值类型为T的函数
 export type Prop<T> = { (): T } | { new(...args: never[]): T & object } | { new(...args: string[]): Function }
 
 export type PropType<T> = Prop<T> | Prop<T>[];
-
+//复杂对象PropOptions
 export type PropValidator<T> = PropOptions<T> | PropType<T>;
 
 export interface PropOptions<T=any> {
@@ -156,11 +158,13 @@ export interface PropOptions<T=any> {
   default?: T | null | undefined | (() => T | null | undefined);
   validator?(value: T): boolean;
 }
-
+//对象类型
 export type RecordPropsDefinition<T> = {
   [K in keyof T]: PropValidator<T[K]>
 }
+//穿入的key为string的类型的数组
 export type ArrayPropsDefinition<T> = (keyof T)[];
+//props为数组或对象
 export type PropsDefinition<T> = ArrayPropsDefinition<T> | RecordPropsDefinition<T>;
 
 export interface ComputedOptions<T> {

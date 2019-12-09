@@ -1,3 +1,4 @@
+//最基本的Vue构造函数
 import { Vue } from "./vue";
 import "./umd";
 

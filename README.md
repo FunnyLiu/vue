@@ -200,6 +200,13 @@ ignored: directory (2)
 ![img](./inner.svg)
   
 
+## 逐个文件分析
+
+### types/index.d.ts
+
+typescript声明文件的入口，包含了Vue对象和其他内部提供api的类型声明。
+
+
 
 <p align="center"><a href="https://vuejs.org" target="_blank" rel="noopener noreferrer"><img width="100" src="https://vuejs.org/images/logo.png" alt="Vue logo"></a></p>
 

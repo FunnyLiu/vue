@@ -14,18 +14,22 @@ import {
 } from "./options";
 import { VNode, VNodeData, VNodeChildren, NormalizedScopedSlot } from "./vnode";
 import { PluginFunction, PluginObject } from "./plugin";
-
+// 针对是否有data进行重载
 export interface CreateElement {
+  //普通字符串如h1
+  //普通组件和异步、动态组件
   (tag?: string | Component<any, any, any, any> | AsyncComponent<any, any, any, any> | (() => Component), children?: VNodeChildren): VNode;
   (tag?: string | Component<any, any, any, any> | AsyncComponent<any, any, any, any> | (() => Component), data?: VNodeData, children?: VNodeChildren): VNode;
 }
 
 export interface Vue {
   readonly $el: Element;
+  //所有传入的options在$options上均能找到
   readonly $options: ComponentOptions<Vue>;
   readonly $parent: Vue;
   readonly $root: Vue;
   readonly $children: Vue[];
+  //$refs可能为数组
   readonly $refs: { [key: string]: Vue | Element | Vue[] | Element[] };
   readonly $slots: { [key: string]: VNode[] | undefined };
   readonly $scopedSlots: { [key: string]: NormalizedScopedSlot | undefined };
@@ -36,9 +40,12 @@ export interface Vue {
   readonly $vnode: VNode;
   readonly $attrs: Record<string, string>;
   readonly $listeners: Record<string, Function | Function[]>;
-
+  //手动挂载dom的方法
   $mount(elementOrSelector?: Element | string, hydrating?: boolean): this;
+  //迫使 Vue 实例重新渲染。注意它仅仅影响实例本身和插入插槽内容的子组件，而不是所有子组件
   $forceUpdate(): void;
+  //完全销毁一个实例。清理它与其它实例的连接，解绑它的全部指令及事件监听器。
+  //触发 beforeDestroy 和 destroyed 的钩子。
   $destroy(): void;
   $set: typeof Vue.set;
   $delete: typeof Vue.delete;
@@ -58,12 +65,13 @@ export interface Vue {
   $emit(event: string, ...args: any[]): this;
   $nextTick(callback: (this: this) => void): void;
   $nextTick(): Promise<void>;
+  //创建element的方法，一般用于render函数中
   $createElement: CreateElement;
 }
 
 export type CombinedVueInstance<Instance extends Vue, Data, Methods, Computed, Props> =  Data & Methods & Computed & Props & Instance;
 export type ExtendedVue<Instance extends Vue, Data, Methods, Computed, Props> = VueConstructor<CombinedVueInstance<Instance, Data, Methods, Computed, Props> & Vue>;
-
+// Vue.config.***
 export interface VueConfiguration {
   silent: boolean;
   optionMergeStrategies: any;
@@ -91,6 +99,7 @@ export interface VueConstructor<V extends Vue = Vue> {
 
   nextTick<T>(callback: (this: T) => void, context?: T): void;
   nextTick(): Promise<void>
+  //向响应式对象中添加一个属性，并确保这个新属性同样是响应式的，且触发视图更新。它必须用于向响应式对象上添加新属性，因为 Vue 无法探测普通的新增属性
   set<T>(object: object, key: string | number, value: T): T;
   set<T>(array: T[], key: number, value: T): T;
   delete(object: object, key: string | number): void;
@@ -124,5 +133,5 @@ export interface VueConstructor<V extends Vue = Vue> {
   config: VueConfiguration;
   version: string;
 }
-
+// 对外暴露Vue全局对象
 export const Vue: VueConstructor;
