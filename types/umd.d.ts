@@ -7,6 +7,8 @@ import {
   PropsDefinition
 } from "./options";
 // 对外暴露Vue命名空间的版本
+// 用于不需要用户手动引入，直接挂载在全局的声明
+// 所以一般umd模块这种直接浏览器引入script就可以访问的都会用namespace来声明
 // Expose some types for backword compatibility...
 declare namespace Vue {
   // vue.d.ts
