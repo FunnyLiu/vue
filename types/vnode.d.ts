@@ -61,6 +61,7 @@ export interface VNodeData {
     render: Function;
     staticRenderFns: Function[];
   };
+  //指令
   directives?: VNodeDirective[];
   keepAlive?: boolean;
 }
