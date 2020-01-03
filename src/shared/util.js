@@ -7,7 +7,7 @@ export const emptyObject = Object.freeze({})
 export function isUndef (v: any): boolean %checks {
   return v === undefined || v === null
 }
-
+// 是否是undefined
 export function isDef (v: any): boolean %checks {
   return v !== undefined && v !== null
 }

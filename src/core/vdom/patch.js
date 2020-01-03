@@ -206,10 +206,12 @@ export function createPatchFunction (backend) {
       insert(parentElm, vnode.elm, refElm)
     }
   }
-
+  // 通过vnode信息创建组件
   function createComponent (vnode, insertedVnodeQueue, parentElm, refElm) {
     let i = vnode.data
+    //判断vnode是否有内容
     if (isDef(i)) {
+      // 检测其keepAlive是否标识位true
       const isReactivated = isDef(vnode.componentInstance) && i.keepAlive
       if (isDef(i = i.hook) && isDef(i = i.init)) {
         i(vnode, false /* hydrating */)
@@ -222,6 +224,7 @@ export function createPatchFunction (backend) {
         initComponent(vnode, insertedVnodeQueue)
         insert(parentElm, vnode.elm, refElm)
         if (isTrue(isReactivated)) {
+          //如果是keepalive范围内，走reactivateComponent的逻辑
           reactivateComponent(vnode, insertedVnodeQueue, parentElm, refElm)
         }
         return true
@@ -246,7 +249,7 @@ export function createPatchFunction (backend) {
       insertedVnodeQueue.push(vnode)
     }
   }
-
+  // 将缓存的dom插入到父元素中
   function reactivateComponent (vnode, insertedVnodeQueue, parentElm, refElm) {
     let i
     // hack for #4339: a reactivated component with inner transition
