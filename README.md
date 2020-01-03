@@ -45,7 +45,7 @@
 |  ├── core
 |  |  ├── components
 |  |  |  ├── index.js
-|  |  |  └── keep-alive.js
+|  |  |  └── keep-alive.js - keep-alive组件实现
 |  |  ├── config.js
 |  |  ├── global-api
 |  |  |  ├── assets.js
@@ -110,7 +110,7 @@
 |  |     |  ├── directives.js
 |  |     |  ├── index.js
 |  |     |  └── ref.js
-|  |     ├── patch.js
+|  |     ├── patch.js - patch阶段实现，VNode渲染为真实DOM中的最后一环
 |  |     └── vnode.js
 |  ├── platforms
 |  |  ├── web
@@ -190,6 +190,10 @@ directory: 111 file: 531
 ignored: directory (2)
 
 ```
+
+## 整体生命周期
+
+<img src="https://raw.githubusercontent.com/brizer/graph-bed/master/img/20200103155422.png"/>
 
 ## 外部模块依赖
 
