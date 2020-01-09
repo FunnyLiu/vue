@@ -20,7 +20,7 @@
 |  └── weex-vue-framework
 ├── scripts
 ├── src
-|  ├── compiler
+|  ├── compiler - 与模板编译相关的代码
 |  |  ├── codeframe.js
 |  |  ├── codegen
 |  |  |  ├── events.js
@@ -42,19 +42,19 @@
 |  |  |  ├── index.js
 |  |  |  └── text-parser.js
 |  |  └── to-function.js
-|  ├── core
-|  |  ├── components
+|  ├── core - 通用的、与运行平台无关的运行时代码
+|  |  ├── components - 内置组件的代码
 |  |  |  ├── index.js
 |  |  |  └── keep-alive.js - keep-alive组件实现
 |  |  ├── config.js
-|  |  ├── global-api
+|  |  ├── global-api - 全局api的代码
 |  |  |  ├── assets.js
 |  |  |  ├── extend.js
 |  |  |  ├── index.js
 |  |  |  ├── mixin.js
 |  |  |  └── use.js
 |  |  ├── index.js
-|  |  ├── instance
+|  |  ├── instance - Vue.js实例的构造函数和原型方法
 |  |  |  ├── events.js
 |  |  |  ├── index.js - Vue对象的入口文件
 |  |  |  ├── init.js
@@ -75,13 +75,13 @@
 |  |  |  |  └── resolve-slots.js
 |  |  |  ├── render.js
 |  |  |  └── state.js
-|  |  ├── observer
-|  |  |  ├── array.js
-|  |  |  ├── dep.js
-|  |  |  ├── index.js
-|  |  |  ├── scheduler.js
+|  |  ├── observer - 实现变化侦测的代码
+|  |  |  ├── array.js - hack的数组方法，用来给watcher通信来完成可观察对象的转换
+|  |  |  ├── dep.js - 专门负责收集依赖的类Dep
+|  |  |  ├── index.js - 提供Observer实例，对需要的object，通过defineProperty递归的建立可观察对象；对需要的数组，通过array.js提供的方法对数组原型进行hack复写，并植入观察逻辑
+|  |  |  ├── scheduler.js - 处理watchers队列，通过nextTick批量处理
 |  |  |  ├── traverse.js
-|  |  |  └── watcher.js
+|  |  |  └── watcher.js - 给vm和observer之间进行桥接的数据更新依赖者
 |  |  ├── util
 |  |  |  ├── debug.js
 |  |  |  ├── env.js
@@ -92,7 +92,7 @@
 |  |  |  ├── options.js
 |  |  |  ├── perf.js
 |  |  |  └── props.js
-|  |  └── vdom
+|  |  └── vdom - 实现virtual dom的代码
 |  |     ├── create-component.js
 |  |     ├── create-element.js
 |  |     ├── create-functional-component.js
@@ -112,7 +112,7 @@
 |  |     |  └── ref.js
 |  |     ├── patch.js - patch阶段实现，VNode渲染为真实DOM中的最后一环
 |  |     └── vnode.js
-|  ├── platforms
+|  ├── platforms - 特定平台运行时代码
 |  |  ├── web
 |  |  |  ├── compiler
 |  |  |  |  ├── directives
@@ -177,9 +177,9 @@
 |  |  |     └── style.js
 |  |  └── weex
 |  ├── server
-|  ├── sfc
+|  ├── sfc - 单文件组件的解析代码
 |  |  └── parser.js
-|  └── shared
+|  └── shared - 项目用到的公共代码
 |     ├── constants.js
 |     └── util.js
 ├── types - typescript声明文件
@@ -195,6 +195,16 @@ ignored: directory (2)
 
 <img src="https://raw.githubusercontent.com/brizer/graph-bed/master/img/20200103155422.png"/>
 
+### 对象的观察
+
+<img src="https://raw.githubusercontent.com/brizer/graph-bed/master/img/20200109162041.png"/>
+
+
+### 数组的观察
+
+<img src="https://raw.githubusercontent.com/brizer/graph-bed/master/img/20200109162255.png"/>
+
+
 ## 外部模块依赖
 
 请在： http://npm.broofa.com?q=vue 查看
@@ -202,7 +212,9 @@ ignored: directory (2)
 ## 内部模块依赖
 
 ![img](./inner.svg)
-  
+
+
+
 
 ## 逐个文件分析
 
@@ -212,8 +224,16 @@ typescript声明文件的入口，包含了Vue对象和其他内部提供api的�
 
 
 
-<p align="center"><a href="https://vuejs.org" target="_blank" rel="noopener noreferrer"><img width="100" src="https://vuejs.org/images/logo.png" alt="Vue logo"></a></p>
+### src/core/observer/dep.js
 
+专门负责收集依赖的类Dep
+
+### src/core/observer/index.js
+
+负责建立对象和数组数据可观测对象的入口，针对数据采用hack原型方法的方式，针对对象则是递归object，对每个子属性进行观察。
+
+
+<p align="center"><a href="https://vuejs.org" target="_blank" rel="noopener noreferrer"><img width="100" src="https://vuejs.org/images/logo.png" alt="Vue logo"></a></p>
 <p align="center">
   <a href="https://circleci.com/gh/vuejs/vue/tree/dev"><img src="https://img.shields.io/circleci/project/github/vuejs/vue/dev.svg" alt="Build Status"></a>
   <a href="https://codecov.io/github/vuejs/vue?branch=dev"><img src="https://img.shields.io/codecov/c/github/vuejs/vue/dev.svg" alt="Coverage Status"></a>
@@ -226,7 +246,6 @@ typescript声明文件的入口，包含了Vue对象和其他内部提供api的�
 </p>
 
 <h2 align="center">Supporting Vue.js</h2>
-
 Vue.js is an MIT-licensed open source project with its ongoing development made possible entirely by the support of these awesome [backers](https://github.com/vuejs/vue/blob/dev/BACKERS.md). If you'd like to join them, please consider:
 
 - [Become a backer or sponsor on Patreon](https://www.patreon.com/evanyou).
@@ -245,11 +264,10 @@ Funds donated via Patreon go directly to support Evan You's full-time work on Vu
     <img width="260px" src="https://raw.githubusercontent.com/vuejs/vuejs.org/master/themes/vue/source/images/stdlib.png">
   </a>
 </p>
-  
+
 <!--special end-->
 
 <h3 align="center">Platinum Sponsors</h3>
-
 <!--platinum start-->
 <table>
   <tbody>
@@ -295,7 +313,6 @@ Funds donated via Patreon go directly to support Evan You's full-time work on Vu
 <!--special-china end-->
 
 <h3 align="center">Gold Sponsors</h3>
-
 <!--gold start-->
 <table>
   <tbody>
@@ -464,14 +481,11 @@ Funds donated via Patreon go directly to support Evan You's full-time work on Vu
 <!--gold end-->
 
 <h3 align="center">Sponsors via <a href="https://opencollective.com/vuejs">Open Collective</a></h3>
-
 <h4 align="center">Platinum</h4>
-
 <a href="https://opencollective.com/vuejs/tiers/platinum-sponsors/0/website" target="_blank" rel="noopener noreferrer"><img src="https://opencollective.com/vuejs/tiers/platinum-sponsors/0/avatar.svg"></a>
 <a href="https://opencollective.com/vuejs/tiers/platinum-sponsors/1/website" target="_blank" rel="noopener noreferrer"><img src="https://opencollective.com/vuejs/tiers/platinum-sponsors/1/avatar.svg"></a>
 
 <h4 align="center">Gold</h4>
-
 <a href="https://opencollective.com/vuejs/tiers/gold-sponsors/0/website" target="_blank" rel="noopener noreferrer"><img src="https://opencollective.com/vuejs/tiers/gold-sponsors/0/avatar.svg" height="60px"></a>
 <a href="https://opencollective.com/vuejs/tiers/gold-sponsors/1/website" target="_blank" rel="noopener noreferrer"><img src="https://opencollective.com/vuejs/tiers/gold-sponsors/1/avatar.svg" height="60px"></a>
 <a href="https://opencollective.com/vuejs/tiers/gold-sponsors/2/website" target="_blank" rel="noopener noreferrer"><img src="https://opencollective.com/vuejs/tiers/gold-sponsors/2/avatar.svg" height="60px"></a>

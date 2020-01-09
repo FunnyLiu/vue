@@ -68,6 +68,7 @@ if (inBrowser && !isIE) {
 /**
  * Flush both queues and run the watchers.
  */
+//将watchers队列中内容统一执行
 function flushSchedulerQueue () {
   currentFlushTimestamp = getNow()
   flushing = true
@@ -92,6 +93,7 @@ function flushSchedulerQueue () {
     }
     id = watcher.id
     has[id] = null
+    //通过watcher.run()执行watcher自己的回调
     watcher.run()
     // in dev build, check and stop circular updates.
     if (process.env.NODE_ENV !== 'production' && has[id] != null) {
@@ -113,15 +115,17 @@ function flushSchedulerQueue () {
   // keep copies of post queues before resetting state
   const activatedQueue = activatedChildren.slice()
   const updatedQueue = queue.slice()
-
+  //重置队列
   resetSchedulerState()
 
   // call component updated and activated hooks
+  // 调用生命周期相关钩子
   callActivatedHooks(activatedQueue)
   callUpdatedHooks(updatedQueue)
 
   // devtool hook
   /* istanbul ignore if */
+  // 抛事件给开发者工具
   if (devtools && config.devtools) {
     devtools.emit('flush')
   }
@@ -133,6 +137,7 @@ function callUpdatedHooks (queue) {
     const watcher = queue[i]
     const vm = watcher.vm
     if (vm._watcher === watcher && vm._isMounted && !vm._isDestroyed) {
+      //执行updated钩子
       callHook(vm, 'updated')
     }
   }
@@ -161,6 +166,7 @@ function callActivatedHooks (queue) {
  * Jobs with duplicate IDs will be skipped unless it's
  * pushed when the queue is being flushed.
  */
+// 维护watcher队列，在生产环境下通过nextTick，执行flushSchedulerQueue
 export function queueWatcher (watcher: Watcher) {
   const id = watcher.id
   if (has[id] == null) {

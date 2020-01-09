@@ -161,6 +161,7 @@ export default class Watcher {
    * Subscriber interface.
    * Will be called when a dependency changes.
    */
+  // 更新watcher
   update () {
     /* istanbul ignore else */
     if (this.lazy) {
@@ -190,6 +191,7 @@ export default class Watcher {
         // set new value
         const oldValue = this.value
         this.value = value
+        // 执行后，调用回调this.cb，来更新对应的vm相关值
         if (this.user) {
           try {
             this.cb.call(this.vm, value, oldValue)

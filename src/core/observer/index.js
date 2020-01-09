@@ -34,6 +34,9 @@ export function toggleObserving (value: boolean) {
  * object's property keys into getter/setters that
  * collect dependencies and dispatch updates.
  */
+/**
+ * Observer类会通过递归的方式把一个对象的所有属性都转化成可观测对象
+ */
 export class Observer {
   value: any;
   dep: Dep;
@@ -43,15 +46,22 @@ export class Observer {
     this.value = value
     this.dep = new Dep()
     this.vmCount = 0
+    // 给value新增一个__ob__属性，值为该value的Observer实例
+    // 相当于为value打上标记，表示它已经被转化成响应式了，避免重复操作
     def(value, '__ob__', this)
+    // 如果值为数组，会走一段额外的处理逻辑
     if (Array.isArray(value)) {
+      // 通过arrayMethods对数组原型上的几个方法进行了复写
+      // 通过hack来完成可观察
       if (hasProto) {
         protoAugment(value, arrayMethods)
       } else {
         copyAugment(value, arrayMethods, arrayKeys)
       }
+      //对数组进行观察
       this.observeArray(value)
     } else {
+      //如果值不是数组，走walk方法
       this.walk(value)
     }
   }
@@ -61,6 +71,7 @@ export class Observer {
    * getter/setters. This method should only be called when
    * value type is Object.
    */
+  // 对obj的每一个key进行defineReactive处理
   walk (obj: Object) {
     const keys = Object.keys(obj)
     for (let i = 0; i < keys.length; i++) {
@@ -71,6 +82,7 @@ export class Observer {
   /**
    * Observe a list of Array items.
    */
+  //对数组每一个值进行observe
   observeArray (items: Array<any>) {
     for (let i = 0, l = items.length; i < l; i++) {
       observe(items[i])
@@ -107,6 +119,7 @@ function copyAugment (target: Object, src: Object, keys: Array<string>) {
  * returns the new observer if successfully observed,
  * or the existing observer if the value already has one.
  */
+// 调研new Observer，将属性转为可观测对象
 export function observe (value: any, asRootData: ?boolean): Observer | void {
   if (!isObject(value) || value instanceof VNode) {
     return
@@ -132,6 +145,7 @@ export function observe (value: any, asRootData: ?boolean): Observer | void {
 /**
  * Define a reactive property on an Object.
  */
+// 将一个对象转换为可观测对象
 export function defineReactive (
   obj: Object,
   key: string,
@@ -139,27 +153,30 @@ export function defineReactive (
   customSetter?: ?Function,
   shallow?: boolean
 ) {
+  //Dep为依赖收集器
   const dep = new Dep()
-
+  //规避不可配置的对象属性
   const property = Object.getOwnPropertyDescriptor(obj, key)
   if (property && property.configurable === false) {
     return
   }
-
+  // 兼容其已有的getter和setters。
   // cater for pre-defined getter/setters
   const getter = property && property.get
   const setter = property && property.set
   if ((!getter || setter) && arguments.length === 2) {
     val = obj[key]
   }
-
+  // 对其value进行observe方法，递归调用new Observer，将一个对象的全部属性递归变为可观测对象
   let childOb = !shallow && observe(val)
+  // 真正建立可观测对象的逻辑
   Object.defineProperty(obj, key, {
     enumerable: true,
     configurable: true,
     get: function reactiveGetter () {
       const value = getter ? getter.call(obj) : val
       if (Dep.target) {
+        //收集依赖
         dep.depend()
         if (childOb) {
           childOb.dep.depend()
@@ -188,6 +205,8 @@ export function defineReactive (
         val = newVal
       }
       childOb = !shallow && observe(newVal)
+      //对依赖进行更新
+      //通过watcher，对其执行update操作
       dep.notify()
     }
   })
