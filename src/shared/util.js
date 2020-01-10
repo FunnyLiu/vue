@@ -7,7 +7,7 @@ export const emptyObject = Object.freeze({})
 export function isUndef (v: any): boolean %checks {
   return v === undefined || v === null
 }
-// 是否是undefined
+// 是否有值
 export function isDef (v: any): boolean %checks {
   return v !== undefined && v !== null
 }
@@ -23,6 +23,7 @@ export function isFalse (v: any): boolean %checks {
 /**
  * Check if value is primitive.
  */
+//  判断是否是原始值
 export function isPrimitive (value: any): boolean %checks {
   return (
     typeof value === 'string' ||

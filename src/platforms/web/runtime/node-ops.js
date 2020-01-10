@@ -1,7 +1,7 @@
 /* @flow */
 
 import { namespaceMap } from 'web/util/index'
-
+//创建元素dom
 export function createElement (tagName: string, vnode: VNode): Element {
   const elm = document.createElement(tagName)
   if (tagName !== 'select') {
@@ -17,11 +17,11 @@ export function createElement (tagName: string, vnode: VNode): Element {
 export function createElementNS (namespace: string, tagName: string): Element {
   return document.createElementNS(namespaceMap[namespace], tagName)
 }
-
+//创建文本节点
 export function createTextNode (text: string): Text {
   return document.createTextNode(text)
 }
-
+//创建注释节点
 export function createComment (text: string): Comment {
   return document.createComment(text)
 }
@@ -49,7 +49,7 @@ export function nextSibling (node: Node): ?Node {
 export function tagName (node: Element): string {
   return node.tagName
 }
-
+//修改文本内容
 export function setTextContent (node: Node, text: string) {
   node.textContent = text
 }

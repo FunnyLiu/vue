@@ -110,8 +110,8 @@
 |  |     |  ├── directives.js
 |  |     |  ├── index.js
 |  |     |  └── ref.js
-|  |     ├── patch.js - patch阶段实现，VNode渲染为真实DOM中的最后一环
-|  |     └── vnode.js
+|  |     ├── patch.js - patch阶段实现，包含了diff算法的具体过程和vnode转为真实dom的操作
+|  |     └── vnode.js - VNode的描述class
 |  ├── platforms - 特定平台运行时代码
 |  |  ├── web
 |  |  |  ├── compiler
@@ -203,6 +203,10 @@ ignored: directory (2)
 ### 数组的观察
 
 <img src="https://raw.githubusercontent.com/brizer/graph-bed/master/img/20200109162255.png"/>
+
+### VNode的更新流程
+
+<img src="https://raw.githubusercontent.com/brizer/graph-bed/master/img/20200110113704.png"/>
 
 
 ## 外部模块依赖
