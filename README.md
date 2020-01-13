@@ -199,25 +199,78 @@ ignored: directory (2)
 
 <img src="https://raw.githubusercontent.com/brizer/graph-bed/master/img/20200113110026.png"/>
 
-编译compiler(src/compiler/index.js) 分为三个阶段
+编译compiler(src/compiler/index.js) 分为三个阶段：
+
 1.模板解析阶段(src/compiler/parser/index.js)：将一堆模板字符串用正则等方式解析成抽象语法树AST；
 
 2.优化阶段(src/compiler/optimizer.js)：遍历AST，找出其中的静态节点，并打上标记；方便Patch阶段的diff算法直接跳过静态节点；
 
 3.代码生成阶段(src/compiler/codegen/index.js)：将AST转换成渲染函数；直接生成render函数需要的函数字符串
 
-### 对象的观察
+### 数据观察
+
+通过Observer(src/core/observer/dep.js)，对需要的object，通过defineProperty递归的建立可观察对象；对需要的数组，通过array.js提供的方法对数组原型进行hack复写，并植入观察逻辑。
+
+Dep用来负责依赖的收集(src/core/observer/dep.js)。
+
+Watcher(src/core/observer/watcher.js),给vm和observer之间进行桥接的数据更新依赖者。
+
+每当观察者需要更新时，通知各Watcher，在scheduler(src/core/observer/scheduler.js)中，处理watchers队列，通过nextTick批量处理。
+
+#### 对象的观察
 
 <img src="https://raw.githubusercontent.com/brizer/graph-bed/master/img/20200109162041.png"/>
 
-
-### 数组的观察
+#### 数组的观察
 
 <img src="https://raw.githubusercontent.com/brizer/graph-bed/master/img/20200109162255.png"/>
+
+对数组的方法进行原型覆盖(src/core/observer/array.js)，从而hack在过程中对依赖通知。
+
 
 ### VNode的更新流程
 
 <img src="https://raw.githubusercontent.com/brizer/graph-bed/master/img/20200110113704.png"/>
+
+VNode(src/core/vdom/vnode.js)最大的用途就是在数据变化前后生成真实DOM对应的虚拟DOM节点。
+
+然后就可以对比新旧两份VNode，找出差异所在，然后更新有差异的DOM节点。
+
+最终达到以最少操作真实DOM更新视图的目的。
+
+Diff算法位于(src/core/vdom/patch.js)。
+
+patch无非就是干三件事：
+
+1、创建节点：新的VNode中有而旧的oldVNode中没有，就在旧的oldVNode中创建。
+
+2、删除节点：新的VNode中没有而旧的oldVNode中有，就从旧的oldVNode中删除。
+
+3、更新节点：新的VNode和旧的oldVNode中都有，就以新的VNode为准，更新旧的oldVNode。
+
+其中在更新新老子节点时会出现四种情况:
+
+1.创建子节点
+
+如果newChildren里面的某个子节点在oldChildren里找不到与之相同的子节点
+那么说明newChildren里面的这个子节点是之前没有的，是需要此次新增的节点，那么就创建子节点。
+
+2.删除子节点
+
+如果把newChildren里面的每一个子节点都循环完毕后，发现在oldChildren还有未处理的子节点，
+那就说明这些未处理的子节点是需要被废弃的，那么就将这些节点删除。
+
+3.移动子节点
+
+如果newChildren里面的某个子节点在oldChildren里找到了与之相同的子节点，但是所处的位置不同，
+这说明此次变化需要调整该子节点的位置，那就以newChildren里子节点的位置为基准，
+调整oldChildren里该节点的位置，使之与在newChildren里的位置相同。
+
+4.更新节点
+
+如果newChildren里面的某个子节点在oldChildren里找到了与之相同的子节点，并且所处的位置也相同，
+那么就更新oldChildren里该节点，使之与newChildren里的该节点相同
+
 
 
 ## 外部模块依赖
