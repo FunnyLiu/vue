@@ -64,6 +64,7 @@ export function lifecycleMixin (Vue: Class<Component>) {
     vm._vnode = vnode
     // Vue.prototype.__patch__ is injected in entry points
     // based on the rendering backend used.
+    //调用patch，将vnode转为dom
     if (!prevVnode) {
       // initial render
       vm.$el = vm.__patch__(vm.$el, vnode, hydrating, false /* removeOnly */)
@@ -198,6 +199,7 @@ export function mountComponent (
     //完成一次渲染。
     //也就是说，如果调用了updateComponent函数，就会将最新的模板内容渲染到视图页面中
     updateComponent = () => {
+      //其中调用了patch对应方法，进入patch阶段，将vnode转为dom
       vm._update(vm._render(), hydrating)
     }
   }
