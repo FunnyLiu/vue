@@ -28,7 +28,7 @@ export function setActiveInstance(vm: Component) {
     activeInstance = prevActiveInstance
   }
 }
-
+// 初始化生命周期
 export function initLifecycle (vm: Component) {
   const options = vm.$options
 
@@ -40,7 +40,7 @@ export function initLifecycle (vm: Component) {
     }
     parent.$children.push(vm)
   }
-
+  //设置一些常用的变量
   vm.$parent = parent
   vm.$root = parent ? parent.$root : vm
 
@@ -88,12 +88,13 @@ export function lifecycleMixin (Vue: Class<Component>) {
   }
 
   Vue.prototype.$forceUpdate = function () {
+    //强制让观察者更新
     const vm: Component = this
     if (vm._watcher) {
       vm._watcher.update()
     }
   }
-
+  // 销毁组件
   Vue.prototype.$destroy = function () {
     const vm: Component = this
     if (vm._isBeingDestroyed) {
@@ -103,9 +104,11 @@ export function lifecycleMixin (Vue: Class<Component>) {
     vm._isBeingDestroyed = true
     // remove self from parent
     const parent = vm.$parent
+    // 将当前的Vue实例从其父级实例中删除
     if (parent && !parent._isBeingDestroyed && !vm.$options.abstract) {
       remove(parent.$children, vm)
     }
+    // 删除依赖追踪
     // teardown watchers
     if (vm._watcher) {
       vm._watcher.teardown()
@@ -120,12 +123,15 @@ export function lifecycleMixin (Vue: Class<Component>) {
       vm._data.__ob__.vmCount--
     }
     // call the last hook...
+    // 增加_isDestroyed标识
     vm._isDestroyed = true
     // invoke destroy hooks on current rendered tree
     vm.__patch__(vm._vnode, null)
     // fire destroyed hook
+    //最后的生命周期钩子调用
     callHook(vm, 'destroyed')
     // turn off all instance listeners.
+    // 删除事件
     vm.$off()
     // remove __vue__ reference
     if (vm.$el) {
@@ -137,7 +143,7 @@ export function lifecycleMixin (Vue: Class<Component>) {
     }
   }
 }
-
+//挂载组件，在运行时的$mount方法中被调用
 export function mountComponent (
   vm: Component,
   el: ?Element,
@@ -164,6 +170,7 @@ export function mountComponent (
       }
     }
   }
+  //生命周期钩子
   callHook(vm, 'beforeMount')
 
   let updateComponent
@@ -186,6 +193,10 @@ export function mountComponent (
       measure(`vue ${name} patch`, startTag, endTag)
     }
   } else {
+    //首先执行渲染函数vm._render()得到一份最新的VNode节点树，
+    //然后执行vm._update()方法对最新的VNode节点树与上一次渲染的旧VNode节点树进行对比并更新DOM节点(即patch操作)，
+    //完成一次渲染。
+    //也就是说，如果调用了updateComponent函数，就会将最新的模板内容渲染到视图页面中
     updateComponent = () => {
       vm._update(vm._render(), hydrating)
     }
@@ -196,6 +207,8 @@ export function mountComponent (
   // component's mounted hook), which relies on vm._watcher being already defined
   new Watcher(vm, updateComponent, noop, {
     before () {
+      //使用watcher，监听，回调生命周期钩子,
+      //在scheduler.js中会在每次更新后，执行updated生命周期钩子
       if (vm._isMounted && !vm._isDestroyed) {
         callHook(vm, 'beforeUpdate')
       }
@@ -207,6 +220,7 @@ export function mountComponent (
   // mounted is called for render-created child components in its inserted hook
   if (vm.$vnode == null) {
     vm._isMounted = true
+    //生命周期钩子mounted
     callHook(vm, 'mounted')
   }
   return vm
@@ -332,10 +346,11 @@ export function deactivateChildComponent (vm: Component, direct?: boolean) {
     callHook(vm, 'deactivated')
   }
 }
-
+// 调用生命周期钩子函数
 export function callHook (vm: Component, hook: string) {
   // #7573 disable dep collection when invoking lifecycle hooks
   pushTarget()
+  //本质就是调用vm.$options上对应挂载的钩子
   const handlers = vm.$options[hook]
   const info = `${hook} hook`
   if (handlers) {

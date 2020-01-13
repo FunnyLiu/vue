@@ -65,7 +65,7 @@ function prependModifierMarker (symbol: string, name: string, dynamic?: boolean)
     ? `_p(${name},"${symbol}")`
     : symbol + name // mark the event as captured
 }
-
+//解析事件
 export function addHandler (
   el: ASTElement,
   name: string,
@@ -111,15 +111,18 @@ export function addHandler (
   // check capture modifier
   if (modifiers.capture) {
     delete modifiers.capture
+    // 给事件名前加'!'用以标记capture修饰符
     name = prependModifierMarker('!', name, dynamic)
   }
   if (modifiers.once) {
     delete modifiers.once
+    // 给事件名前加'~'用以标记once修饰符
     name = prependModifierMarker('~', name, dynamic)
   }
   /* istanbul ignore if */
   if (modifiers.passive) {
     delete modifiers.passive
+    // 给事件名前加'&'用以标记passive修饰符
     name = prependModifierMarker('&', name, dynamic)
   }
 

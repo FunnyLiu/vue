@@ -11,9 +11,10 @@ function Vue (options) {
   ) {
     warn('Vue is a constructor and should be called with the `new` keyword')
   }
+  // new Vue()的核心执行
   this._init(options)
 }
-
+//_init方法的来源
 initMixin(Vue)
 stateMixin(Vue)
 eventsMixin(Vue)

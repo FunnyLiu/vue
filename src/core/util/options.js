@@ -46,6 +46,7 @@ if (process.env.NODE_ENV !== 'production') {
 /**
  * Helper that recursively merges two data objects together.
  */
+// merge data的方法
 function mergeData (to: Object, from: ?Object): Object {
   if (!from) return to
   let key, toVal, fromVal
@@ -117,7 +118,7 @@ export function mergeDataOrFn (
     }
   }
 }
-
+//针对data的merge
 strats.data = function (
   parentVal: any,
   childVal: any,
@@ -143,6 +144,7 @@ strats.data = function (
 /**
  * Hooks and props are merged as arrays.
  */
+//递归对生命周期钩子进行merge
 function mergeHook (
   parentVal: ?Array<Function>,
   childVal: ?Function | ?Array<Function>
@@ -168,7 +170,7 @@ function dedupeHooks (hooks) {
   }
   return res
 }
-
+//对不同生命周期的merge，使用mergeHook方法
 LIFECYCLE_HOOKS.forEach(hook => {
   strats[hook] = mergeHook
 })
@@ -205,6 +207,7 @@ ASSET_TYPES.forEach(function (type) {
  * Watchers hashes should not overwrite one
  * another, so we merge them as arrays.
  */
+// 对watch的merge策略
 strats.watch = function (
   parentVal: ?Object,
   childVal: ?Object,
@@ -238,6 +241,7 @@ strats.watch = function (
 /**
  * Other object hashes.
  */
+//其他不同类型的merge
 strats.props =
 strats.methods =
 strats.inject =
@@ -385,6 +389,8 @@ function assertObjectType (name: string, value: any, vm: ?Component) {
  * Merge two option objects into a new one.
  * Core utility used in both instantiation and inheritance.
  */
+// 合并options
+// 主要功能是把 parent 和 child 这两个对象根据一些合并策略，合并成一个新对象并返回
 export function mergeOptions (
   parent: Object,
   child: Object,
@@ -427,6 +433,7 @@ export function mergeOptions (
       mergeField(key)
     }
   }
+  //针对不同的类型，调用不同的策略进行merge
   function mergeField (key) {
     const strat = strats[key] || defaultStrat
     options[key] = strat(parent[key], child[key], vm, key)

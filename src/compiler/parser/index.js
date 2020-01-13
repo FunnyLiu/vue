@@ -758,7 +758,7 @@ function processComponent (el) {
     el.inlineTemplate = true
   }
 }
-
+// 解析属性
 function processAttrs (el) {
   const list = el.attrsList
   let i, l, name, rawName, value, modifiers, syncGen, isDynamic
@@ -769,6 +769,7 @@ function processAttrs (el) {
       // mark element as dynamic
       el.hasBindings = true
       // modifiers
+      // 解析修饰符
       modifiers = parseModifiers(name.replace(dirRE, ''))
       // support .foo shorthand syntax for the .prop modifier
       if (process.env.VBIND_PROP_SHORTHAND && propBindRE.test(name)) {
@@ -803,6 +804,7 @@ function processAttrs (el) {
           }
           if (modifiers.sync) {
             syncGen = genAssignmentCode(value, `$event`)
+            //addHandler解析事件指令
             if (!isDynamic) {
               addHandler(
                 el,

@@ -15,6 +15,7 @@ const idToTemplate = cached(id => {
 })
 
 const mount = Vue.prototype.$mount
+//包含了编译和运行时的$mount方法
 Vue.prototype.$mount = function (
   el?: string | Element,
   hydrating?: boolean
@@ -63,7 +64,7 @@ Vue.prototype.$mount = function (
       if (process.env.NODE_ENV !== 'production' && config.performance && mark) {
         mark('compile')
       }
-      // 调用compiler，进行模板的编译s
+      // 调用compiler，进行模板的编译
 
       const { render, staticRenderFns } = compileToFunctions(template, {
         outputSourceRange: process.env.NODE_ENV !== 'production',
@@ -83,6 +84,7 @@ Vue.prototype.$mount = function (
       }
     }
   }
+  //再调用原有的$mount方法，也就是运行时的$mount方法
   return mount.call(this, el, hydrating)
 }
 

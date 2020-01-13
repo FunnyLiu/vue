@@ -55,12 +55,12 @@
 |  |  |  └── use.js
 |  |  ├── index.js
 |  |  ├── instance - Vue.js实例的构造函数和原型方法
-|  |  |  ├── events.js
-|  |  |  ├── index.js - Vue对象的入口文件
-|  |  |  ├── init.js
-|  |  |  ├── inject.js
-|  |  |  ├── lifecycle.js
-|  |  |  ├── proxy.js
+|  |  |  ├── events.js - 提供initEvents，负责初始化事件绑定
+|  |  |  ├── index.js - new Vue的入口文件
+|  |  |  ├── init.js - 初始化的逻辑，包含了initLifecycle、initEvents、initRender、initInjections、initState、initProvide等多个初始化过程
+|  |  |  ├── inject.js - 提供initInjections，初始化inject
+|  |  |  ├── lifecycle.js - 提供initLifecycle，初始化生命周期过程
+|  |  |  ├── proxy.js - 提供代理函数，方便部分私有属性挂载到vm
 |  |  |  ├── render-helpers
 |  |  |  |  ├── bind-dynamic-keys.js
 |  |  |  |  ├── bind-object-listeners.js
@@ -73,8 +73,8 @@
 |  |  |  |  ├── resolve-filter.js
 |  |  |  |  ├── resolve-scoped-slots.js
 |  |  |  |  └── resolve-slots.js
-|  |  |  ├── render.js
-|  |  |  └── state.js
+|  |  |  ├── render.js - 提供initRender，负责挂载渲染相关方法
+|  |  |  └── state.js - 提供initState，负责初始化props/methods/data/computed/watch
 |  |  ├── observer - 实现变化侦测的代码
 |  |  |  ├── array.js - hack的数组方法，用来给watcher通信来完成可观察对象的转换
 |  |  |  ├── dep.js - 专门负责收集依赖的类Dep
@@ -88,7 +88,7 @@
 |  |  |  ├── error.js
 |  |  |  ├── index.js
 |  |  |  ├── lang.js
-|  |  |  ├── next-tick.js
+|  |  |  ├── next-tick.js - nextTick的实现，从promise、MutationObserver、setImmediate、setTimeout依次降级
 |  |  |  ├── options.js
 |  |  |  ├── perf.js
 |  |  |  └── props.js
@@ -129,8 +129,8 @@
 |  |  |  |  ├── options.js
 |  |  |  |  └── util.js
 |  |  |  ├── entry-compiler.js
-|  |  |  ├── entry-runtime-with-compiler.js
-|  |  |  ├── entry-runtime.js
+|  |  |  ├── entry-runtime-with-compiler.js - 运行时+编译
+|  |  |  ├── entry-runtime.js - 仅运行时
 |  |  |  ├── entry-server-basic-renderer.js
 |  |  |  ├── entry-server-renderer.js
 |  |  |  ├── runtime
@@ -191,7 +191,7 @@ ignored: directory (2)
 
 ```
 
-## 整体生命周期
+## 框架整体生命周期
 
 <img src="https://raw.githubusercontent.com/brizer/graph-bed/master/img/20200103155422.png"/>
 
@@ -270,6 +270,33 @@ patch无非就是干三件事：
 
 如果newChildren里面的某个子节点在oldChildren里找到了与之相同的子节点，并且所处的位置也相同，
 那么就更新oldChildren里该节点，使之与newChildren里的该节点相同
+
+### 组件的生命周期
+
+<img src="https://raw.githubusercontent.com/brizer/graph-bed/master/img/lifecycle.png"/>
+
+初始化new Vue(src/core/instance/index.js)，执行了initMixin(src/core/instance/init.js)方法给Vue挂载的_init方法。
+
+init包含了initLifecycle、initEvents、initRender、initInjections、initState、initProvide等多个初始化过程，对生命周期、事件、渲染、inject、props/data/computed/watch、provide等均进行了初始化过程。
+
+在initLifecycle之前调用了**beforeCreate**钩子；
+
+在initProvide之后，调用了**created**钩子；
+
+开发者$mount之后，运行时的$mount(src/platforms/web/entry-runtime-with-compiler.js)，会在模板编译为render后，调用编译时的$mount(src/platforms/web/runtime/index.js)。其中又回到了lifecycle中的mountComponent(src/core/instance/lifecycle.js)对组件进行挂载。
+
+挂载前，调用了**beforeMount**钩子;然后对vm进行update，对最新的VNode节点树与上一次渲染的旧VNode节点树进行对比并更新DOM节点完成一次渲染。
+
+随即对组件进行监听，并注册回调**beforeUpdate**钩子；
+
+在scheduler(src/core/observer/scheduler.js)中真正发送修改时，触发**updated**钩子；
+
+挂载后，触发**mounted**钩子；
+
+在$destroy调用后，回调**beforeDestroy**钩子，然后进行了回收操作（将当前的Vue实例从其父级实例中删除、删除依赖追踪、增加_isDestroyed标识、删除事件），并回调**destroyed**钩子。
+
+整个组件的生命周期走完。
+
 
 
 

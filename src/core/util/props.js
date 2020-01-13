@@ -17,7 +17,7 @@ type PropOptions = {
   required: ?boolean,
   validator: ?Function
 };
-
+//对父组件传入的props进行校验
 export function validateProp (
   key: string,
   propOptions: Object,

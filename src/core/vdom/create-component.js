@@ -97,7 +97,8 @@ const componentVNodeHooks = {
 }
 
 const hooksToMerge = Object.keys(componentVNodeHooks)
-
+// 模板编译的最终目的是创建render函数供挂载的时候调用生成虚拟DOM
+// 那么在挂载阶段， 如果被挂载的节点是一个组件节点，则通过 createComponent 函数创建一个组件 vnode
 export function createComponent (
   Ctor: Class<Component> | Function | Object | void,
   data: ?VNodeData,
