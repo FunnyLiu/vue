@@ -39,14 +39,19 @@ export type CodegenResult = {
   render: string,
   staticRenderFns: Array<string>
 };
-
+//代码生成器:
+// 最终生成的内容是render函数字符串。
+// 所谓代码生成其实就是根据模板对应的抽象语法树AST生成一个函数
+// 通过调用这个函数就可以得到模板对应的虚拟DOM
 export function generate (
   ast: ASTElement | void,
   options: CompilerOptions
 ): CodegenResult {
   const state = new CodegenState(options)
+  // 通过genElement生成VNode
   const code = ast ? genElement(ast, state) : '_c("div")'
   return {
+    //将vnode包裹返回，通过with转换作用域
     render: `with(this){return ${code}}`,
     staticRenderFns: state.staticRenderFns
   }
@@ -56,7 +61,7 @@ export function genElement (el: ASTElement, state: CodegenState): string {
   if (el.parent) {
     el.pre = el.pre || el.parent.pre
   }
-
+  // 根据不同类型执行不同的生成函数
   if (el.staticRoot && !el.staticProcessed) {
     return genStatic(el, state)
   } else if (el.once && !el.onceProcessed) {
@@ -94,7 +99,7 @@ export function genElement (el: ASTElement, state: CodegenState): string {
     return code
   }
 }
-
+//生成静态VNode
 // hoist static sub-trees out
 function genStatic (el: ASTElement, state: CodegenState): string {
   el.staticProcessed = true
@@ -115,6 +120,7 @@ function genStatic (el: ASTElement, state: CodegenState): string {
 }
 
 // v-once
+//生成once VNode
 function genOnce (el: ASTElement, state: CodegenState): string {
   el.onceProcessed = true
   if (el.if && !el.ifProcessed) {
@@ -141,7 +147,7 @@ function genOnce (el: ASTElement, state: CodegenState): string {
     return genStatic(el, state)
   }
 }
-
+//正常if VNode
 export function genIf (
   el: any,
   state: CodegenState,

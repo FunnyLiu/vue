@@ -24,7 +24,7 @@
 |  |  ├── codeframe.js
 |  |  ├── codegen
 |  |  |  ├── events.js
-|  |  |  └── index.js
+|  |  |  └── index.js - 代码生成器，将ast生成vnode的render函数执行字符串，给render函数
 |  |  ├── create-compiler.js
 |  |  ├── directives
 |  |  |  ├── bind.js
@@ -33,14 +33,14 @@
 |  |  |  └── on.js
 |  |  ├── error-detector.js
 |  |  ├── helpers.js
-|  |  ├── index.js
-|  |  ├── optimizer.js
+|  |  ├── index.js - 模板编译入口文件，使用parser/index.js从模板提取AST，经过optimizer.js优化标识静态节点，最后通过codegen/index.js生成render函数执行的字符串
+|  |  ├── optimizer.js - 优化器，标识静态节点，方便patch阶段diff优化掉过
 |  |  ├── parser
 |  |  |  ├── entity-decoder.js
-|  |  |  ├── filter-parser.js
-|  |  |  ├── html-parser.js
-|  |  |  ├── index.js
-|  |  |  └── text-parser.js
+|  |  |  ├── filter-parser.js - 过滤器解析器，负责{{}}
+|  |  |  ├── html-parser.js - html解析器，解析标签，使用text-parser解析文本
+|  |  |  ├── index.js - 模板解析器入口文件，将模板变为AST，调用html-parser.js，最后生成AST
+|  |  |  └── text-parser.js - 文本解析器，负责文本节点和属性提取
 |  |  └── to-function.js
 |  ├── core - 通用的、与运行平台无关的运行时代码
 |  |  ├── components - 内置组件的代码
@@ -194,6 +194,17 @@ ignored: directory (2)
 ## 整体生命周期
 
 <img src="https://raw.githubusercontent.com/brizer/graph-bed/master/img/20200103155422.png"/>
+
+### 模板的编译过程
+
+<img src="https://raw.githubusercontent.com/brizer/graph-bed/master/img/20200113110026.png"/>
+
+编译compiler(src/compiler/index.js) 分为三个阶段
+1.模板解析阶段(src/compiler/parser/index.js)：将一堆模板字符串用正则等方式解析成抽象语法树AST；
+
+2.优化阶段(src/compiler/optimizer.js)：遍历AST，找出其中的静态节点，并打上标记；方便Patch阶段的diff算法直接跳过静态节点；
+
+3.代码生成阶段(src/compiler/codegen/index.js)：将AST转换成渲染函数；直接生成render函数需要的函数字符串
 
 ### 对象的观察
 

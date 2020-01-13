@@ -20,7 +20,7 @@ import {
   pluckModuleFunction,
   getAndRemoveAttrByRegex
 } from '../helpers'
-
+//parser，主要负责通过正则等方式，将模板解析成抽象语法树AST
 export const onRE = /^@|^v-on:/
 export const dirRE = process.env.VBIND_PROP_SHORTHAND
   ? /^v-|^@|^:|^\.|^#/
@@ -76,6 +76,7 @@ export function createASTElement (
 /**
  * Convert HTML string to AST.
  */
+//对外暴露的主函数parse
 export function parse (
   template: string,
   options: CompilerOptions
@@ -200,7 +201,7 @@ export function parse (
       )
     }
   }
-
+  //对字符串模板进行解析
   parseHTML(template, {
     warn,
     expectHTML: options.expectHTML,
@@ -210,6 +211,7 @@ export function parse (
     shouldDecodeNewlinesForHref: options.shouldDecodeNewlinesForHref,
     shouldKeepComment: options.comments,
     outputSourceRange: options.outputSourceRange,
+    // 解析到开始标签时，使用该函数
     start (tag, attrs, unary, start, end) {
       // check namespace.
       // inherit parent ns if there is one
@@ -296,7 +298,7 @@ export function parse (
         closeElement(element)
       }
     },
-
+    // 解析到结束标签时，使用该函数
     end (tag, start, end) {
       const element = stack[stack.length - 1]
       // pop stack
@@ -307,7 +309,7 @@ export function parse (
       }
       closeElement(element)
     },
-
+    // 解析到文本时，使用该函数
     chars (text: string, start: number, end: number) {
       if (!currentParent) {
         if (process.env.NODE_ENV !== 'production') {
@@ -357,6 +359,7 @@ export function parse (
         }
         let res
         let child: ?ASTNode
+        //如果遇到文本，就会使用文本解析器parseText
         if (!inVPre && text !== ' ' && (res = parseText(text, delimiters))) {
           child = {
             type: 2,
@@ -379,6 +382,7 @@ export function parse (
         }
       }
     },
+    //解析到注释时，使用该函数
     comment (text: string, start, end) {
       // adding anyting as a sibling to the root node is forbidden
       // comments should still be allowed, but ignored
@@ -775,6 +779,7 @@ function processAttrs (el) {
       }
       if (bindRE.test(name)) { // v-bind
         name = name.replace(bindRE, '')
+        //过滤器解析器，解析过滤器
         value = parseFilters(value)
         isDynamic = dynamicArgRE.test(name)
         if (isDynamic) {

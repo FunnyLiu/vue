@@ -50,7 +50,7 @@ function decodeAttr (value, shouldDecodeNewlines) {
   const re = shouldDecodeNewlines ? encodedAttrWithNewLines : encodedAttr
   return value.replace(re, match => decodingMap[match])
 }
-
+//解析template
 export function parseHTML (html, options) {
   const stack = []
   const expectHTML = options.expectHTML
@@ -58,25 +58,38 @@ export function parseHTML (html, options) {
   const canBeLeftOpenTag = options.canBeLeftOpenTag || no
   let index = 0
   let last, lastTag
+  //开启一个 while 循环，循环结束的条件是 html 为空，即 html 被 parse 完毕
   while (html) {
     last = html
     // Make sure we're not in a plaintext content element like script/style
+    // 确保即将 parse 的内容不是在纯文本标签里 (script,style,textarea)
     if (!lastTag || !isPlainTextElement(lastTag)) {
       let textEnd = html.indexOf('<')
+      /**
+       * 如果html字符串是以'<'开头,则有以下几种可能
+       * 开始标签:<div>
+       * 结束标签:</div>
+       * 注释:<!-- 我是注释 -->
+       * 条件注释:<!-- [if !IE] --> <!-- [endif] -->
+       * DOCTYPE:<!DOCTYPE html>
+       * 需要一一去匹配尝试
+       */
       if (textEnd === 0) {
         // Comment:
+        // 判断是否是注释
         if (comment.test(html)) {
           const commentEnd = html.indexOf('-->')
 
           if (commentEnd >= 0) {
             if (options.shouldKeepComment) {
+              //对注释进行解析
               options.comment(html.substring(4, commentEnd), index, index + commentEnd + 3)
             }
             advance(commentEnd + 3)
             continue
           }
         }
-
+        // 判断是否是条件注销
         // http://en.wikipedia.org/wiki/Conditional_comment#Downlevel-revealed_conditional_comment
         if (conditionalComment.test(html)) {
           const conditionalEnd = html.indexOf(']>')
@@ -88,6 +101,7 @@ export function parseHTML (html, options) {
         }
 
         // Doctype:
+        // 判断是否是DOCTYPE
         const doctypeMatch = html.match(doctype)
         if (doctypeMatch) {
           advance(doctypeMatch[0].length)
@@ -95,6 +109,7 @@ export function parseHTML (html, options) {
         }
 
         // End tag:
+        //判断是否是结束标签
         const endTagMatch = html.match(endTag)
         if (endTagMatch) {
           const curIndex = index
@@ -104,8 +119,10 @@ export function parseHTML (html, options) {
         }
 
         // Start tag:
+        //判断是否是开始标签
         const startTagMatch = parseStartTag()
         if (startTagMatch) {
+          // 调用外界传入的不同回调函数，来完成对应解析
           handleStartTag(startTagMatch)
           if (shouldIgnoreFirstNewline(startTagMatch.tagName, html)) {
             advance(1)
@@ -113,7 +130,7 @@ export function parseHTML (html, options) {
           continue
         }
       }
-
+      // 如果html字符串不是以'<'开头,则解析文本类型
       let text, rest, next
       if (textEnd >= 0) {
         rest = html.slice(textEnd)
@@ -131,7 +148,7 @@ export function parseHTML (html, options) {
         }
         text = html.substring(0, textEnd)
       }
-
+      // 如果在html字符串中没有找到'<'，表示这一段html字符串都是纯文本
       if (textEnd < 0) {
         text = html
       }
@@ -139,11 +156,13 @@ export function parseHTML (html, options) {
       if (text) {
         advance(text.length)
       }
-
+      // 把截取出来的text转化成textAST  
       if (options.chars && text) {
+        // 执行传入的文本操作回调函数
         options.chars(text, index - text.length, index)
       }
     } else {
+      // 父元素为script、style、textarea时，其内部的内容全部当做纯文本处理
       let endTagLength = 0
       const stackedTag = lastTag.toLowerCase()
       const reStackedTag = reCache[stackedTag] || (reCache[stackedTag] = new RegExp('([\\s\\S]*?)(</' + stackedTag + '[^>]*>)', 'i'))
@@ -183,7 +202,7 @@ export function parseHTML (html, options) {
     index += n
     html = html.substring(n)
   }
-
+  //parse 开始标签
   function parseStartTag () {
     const start = html.match(startTagOpen)
     if (start) {
@@ -195,6 +214,7 @@ export function parseHTML (html, options) {
       advance(start[0].length)
       let end, attr
       while (!(end = html.match(startTagClose)) && (attr = html.match(dynamicArgAttribute) || html.match(attribute))) {
+        //attr为正则拿到的所有属性
         attr.start = index
         advance(attr[0].length)
         attr.end = index
@@ -208,7 +228,7 @@ export function parseHTML (html, options) {
       }
     }
   }
-
+  //处理 parseStartTag 的结果
   function handleStartTag (match) {
     const tagName = match.tagName
     const unarySlash = match.unarySlash
@@ -251,7 +271,7 @@ export function parseHTML (html, options) {
       options.start(tagName, attrs, unary, match.start, match.end)
     }
   }
-
+  //parse 结束标签
   function parseEndTag (tagName, start, end) {
     let pos, lowerCasedTagName
     if (start == null) start = index

@@ -31,6 +31,8 @@ Vue.prototype.$mount = function (
 
   const options = this.$options
   // resolve template/el and convert to render function
+  // 如果开发者没手动传入render
+  // 则对模板进行编译
   if (!options.render) {
     let template = options.template
     if (template) {
@@ -61,6 +63,7 @@ Vue.prototype.$mount = function (
       if (process.env.NODE_ENV !== 'production' && config.performance && mark) {
         mark('compile')
       }
+      // 调用compiler，进行模板的编译s
 
       const { render, staticRenderFns } = compileToFunctions(template, {
         outputSourceRange: process.env.NODE_ENV !== 'production',
@@ -69,6 +72,7 @@ Vue.prototype.$mount = function (
         delimiters: options.delimiters,
         comments: options.comments
       }, this)
+      // 然后获取到生成后的render
       options.render = render
       options.staticRenderFns = staticRenderFns
 
