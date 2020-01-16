@@ -1,5 +1,5 @@
 /* @flow */
-
+// 自定义事件的实现
 import {
   tip,
   toArray,
@@ -51,6 +51,7 @@ export function updateComponentListeners (
 
 export function eventsMixin (Vue: Class<Component>) {
   const hookRE = /^hook:/
+  //给Vue增加了$on
   Vue.prototype.$on = function (event: string | Array<string>, fn: Function): Component {
     const vm: Component = this
     if (Array.isArray(event)) {
@@ -58,6 +59,7 @@ export function eventsMixin (Vue: Class<Component>) {
         vm.$on(event[i], fn)
       }
     } else {
+      //给_events指定event增加执行函数fn
       (vm._events[event] || (vm._events[event] = [])).push(fn)
       // optimize hook:event cost by using a boolean flag marked at registration
       // instead of a hash lookup
@@ -98,6 +100,7 @@ export function eventsMixin (Vue: Class<Component>) {
     if (!cbs) {
       return vm
     }
+    //删除队列中指定事件
     if (!fn) {
       vm._events[event] = null
       return vm
@@ -114,7 +117,7 @@ export function eventsMixin (Vue: Class<Component>) {
     }
     return vm
   }
-
+  // 触发事件
   Vue.prototype.$emit = function (event: string): Component {
     const vm: Component = this
     if (process.env.NODE_ENV !== 'production') {
@@ -135,6 +138,7 @@ export function eventsMixin (Vue: Class<Component>) {
       const args = toArray(arguments, 1)
       const info = `event handler for "${event}"`
       for (let i = 0, l = cbs.length; i < l; i++) {
+        //执行cbs
         invokeWithErrorHandling(cbs[i], vm, args, vm, info)
       }
     }

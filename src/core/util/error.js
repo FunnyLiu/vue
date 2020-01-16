@@ -32,7 +32,7 @@ export function handleError (err: Error, vm: any, info: string) {
     popTarget()
   }
 }
-
+//确保trycatch的执行handler
 export function invokeWithErrorHandling (
   handler: Function,
   context: any,
