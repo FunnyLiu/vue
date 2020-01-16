@@ -219,6 +219,29 @@ Watcher(src/core/observer/watcher.js),给vm和observer之间进行桥接的数�
 
 每当观察者需要更新时，通知各Watcher，在scheduler(src/core/observer/scheduler.js)中，处理watchers队列，通过nextTick批量处理。
 
+#### Watcher 和 Dep 的关系
+
+watcher 中实例化了 dep 并向 dep.subs 中添加了订阅者,dep 通过 notify 遍历了 dep.subs 通知每个 watcher 更新。
+
+**依赖收集**
+
+initState 时,对 computed 属性初始化时,触发 computed watcher 依赖收集
+
+initState 时,对侦听属性初始化时,触发 user watcher 依赖收集
+
+render()的过程,触发 render watcher 依赖收集
+
+re-render 时,vm.render()再次执行,会移除所有 subs 中的 watcer 的订阅,重新赋值。
+
+
+**派发更新**
+
+组件中对响应的数据进行了修改,触发 setter 的逻辑
+
+调用 dep.notify()
+
+遍历所有的 subs（Watcher 实例）,调用每一个 watcher 的 update 方法。
+
 #### 对象的观察
 
 <img src="https://raw.githubusercontent.com/brizer/graph-bed/master/img/20200109162041.png"/>

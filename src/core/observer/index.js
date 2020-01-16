@@ -217,6 +217,8 @@ export function defineReactive (
  * triggers change notification if the property doesn't
  * already exist.
  */
+//对一个对象建立观察
+//data注册的默认会观察，后期新增的对象则需要手动调用该api来完成观察建立
 export function set (target: Array<any> | Object, key: any, val: any): any {
   if (process.env.NODE_ENV !== 'production' &&
     (isUndef(target) || isPrimitive(target))
