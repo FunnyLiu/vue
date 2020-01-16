@@ -262,6 +262,8 @@ export function genData (el: ASTElement, state: CodegenState): string {
     data += `domProps:${genProps(el.props)},`
   }
   // event handlers
+  //对事件进行处理
+  //生成事件专用字符串，往下给render函数
   if (el.events) {
     data += `${genHandlers(el.events, false)},`
   }

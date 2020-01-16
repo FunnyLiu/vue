@@ -74,7 +74,7 @@ function createKeyToOldIdx (children, beginIdx, endIdx) {
   }
   return map
 }
-
+//patch对外暴露的入口函数
 export function createPatchFunction (backend) {
   let i, j
   const cbs = {}
@@ -796,7 +796,7 @@ export function createPatchFunction (backend) {
       return node.nodeType === (vnode.isComment ? 8 : 3)
     }
   }
-
+  //入口函数真正return的patch函数
   return function patch (oldVnode, vnode, hydrating, removeOnly) {
     if (isUndef(vnode)) {
       if (isDef(oldVnode)) invokeDestroyHook(oldVnode)

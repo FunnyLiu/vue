@@ -51,7 +51,7 @@ const modifierCode: { [key: string]: string } = {
   middle: genGuard(`'button' in $event && $event.button !== 1`),
   right: genGuard(`'button' in $event && $event.button !== 2`)
 }
-
+// 对外暴露的事件处理方法，处理vnode事件的代码生成
 export function genHandlers (
   events: ASTElementHandlers,
   isNative: boolean
@@ -60,6 +60,7 @@ export function genHandlers (
   let staticHandlers = ``
   let dynamicHandlers = ``
   for (const name in events) {
+    // 处理一个事件
     const handlerCode = genHandler(events[name])
     if (events[name] && events[name].dynamic) {
       dynamicHandlers += `${name},${handlerCode},`
@@ -92,7 +93,7 @@ function genWeexHandler (params: Array<any>, handlerCode: string) {
     `params:${JSON.stringify(bindings)}\n` +
     '}'
 }
-
+// 单个事件代码生成
 function genHandler (handler: ASTElementHandler | Array<ASTElementHandler>): string {
   if (!handler) {
     return 'function(){}'
