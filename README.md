@@ -211,6 +211,8 @@ ignored: directory (2)
 
 ### 数据观察
 
+<img src="https://raw.githubusercontent.com/brizer/graph-bed/master/img/20200116113829.png"/>
+
 通过Observer(src/core/observer/dep.js)，对需要的object，通过defineProperty递归的建立可观察对象；对需要的数组，通过array.js提供的方法对数组原型进行hack复写，并植入观察逻辑。
 
 Dep用来负责依赖的收集(src/core/observer/dep.js)。
