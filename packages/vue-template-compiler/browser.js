@@ -4120,7 +4120,7 @@
   // need to explicitly return null so that we can determine whether to remove
   // the listener for .once
   var genGuard = function (condition) { return ("if(" + condition + ")return null;"); };
-
+  // 事件修饰符
   var modifierCode = {
     stop: '$event.stopPropagation();',
     prevent: '$event.preventDefault();',
