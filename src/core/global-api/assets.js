@@ -7,6 +7,7 @@ export function initAssetRegisters (Vue: GlobalAPI) {
   /**
    * Create asset registration methods.
    */
+  //Vue.component,Vue.directive,Vue.filter
   ASSET_TYPES.forEach(type => {
     Vue[type] = function (
       id: string,

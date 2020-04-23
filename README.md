@@ -47,12 +47,12 @@
 |  |  |  ├── index.js
 |  |  |  └── keep-alive.js - keep-alive组件实现
 |  |  ├── config.js
-|  |  ├── global-api - 全局api的代码
-|  |  |  ├── assets.js
-|  |  |  ├── extend.js
+|  |  ├── global-api - 全局api的代码，比如Vue.set/Vue.nextTick等等
+|  |  |  ├── assets.js - 定义Vue.component,Vue.directive,Vue.filter
+|  |  |  ├── extend.js - 定义Vue.extend
 |  |  |  ├── index.js
-|  |  |  ├── mixin.js
-|  |  |  └── use.js
+|  |  |  ├── mixin.js - 定义Vue.mixin
+|  |  |  └── use.js - 定义Vue.use
 |  |  ├── index.js
 |  |  ├── instance - Vue.js实例的构造函数和原型方法
 |  |  |  ├── events.js - 提供initEvents，负责初始化事件绑定
