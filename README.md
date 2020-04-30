@@ -54,7 +54,7 @@
 |  |  |  ├── mixin.js - 定义Vue.mixin
 |  |  |  └── use.js - 定义Vue.use
 |  |  ├── index.js
-|  |  ├── instance - Vue.js实例的构造函数和原型方法
+|  |  ├── instance - Vue.js实例的构造函数和原型方法，也就是Vue对象本身
 |  |  |  ├── events.js - 提供initEvents，负责初始化事件绑定
 |  |  |  ├── index.js - new Vue的入口文件
 |  |  |  ├── init.js - 初始化的逻辑，包含了initLifecycle、initEvents、initRender、initInjections、initState、initProvide等多个初始化过程
