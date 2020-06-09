@@ -144,7 +144,8 @@ strats.data = function (
 /**
  * Hooks and props are merged as arrays.
  */
-//递归对生命周期钩子进行merge
+//递归对生命周期钩子进行merge，
+//将parent与child的生命周期钩子函数合并成数组形式
 function mergeHook (
   parentVal: ?Array<Function>,
   childVal: ?Function | ?Array<Function>
@@ -265,6 +266,12 @@ strats.provide = mergeDataOrFn
 /**
  * Default strategy.
  */
+//defaultStrat表示默认的合并策略，
+//childVal是需要处理的选项，当选项值不为undefined时，直接返回该选项。
+//这也就意味着，那些未命中合并策略的选项将会被child中的选项直接覆盖。
+//比如parent与child的组件options中均存在 demo: { ... } 属性，
+//mixin后，parent中的demo无论定义为何值都会被child中的demo覆盖。
+
 const defaultStrat = function (parentVal: any, childVal: any): any {
   return childVal === undefined
     ? parentVal
@@ -390,6 +397,7 @@ function assertObjectType (name: string, value: any, vm: ?Component) {
  * Core utility used in both instantiation and inheritance.
  */
 // 合并options
+// mixin主要基于此实现
 // 主要功能是把 parent 和 child 这两个对象根据一些合并策略，合并成一个新对象并返回
 export function mergeOptions (
   parent: Object,
@@ -403,9 +411,11 @@ export function mergeOptions (
   if (typeof child === 'function') {
     child = child.options
   }
-
+  // 规范化props
   normalizeProps(child, vm)
+  // 规范化inject
   normalizeInject(child, vm)
+  // 规范化指令
   normalizeDirectives(child)
 
   // Apply extends and mixins on the child options,
@@ -417,6 +427,7 @@ export function mergeOptions (
       parent = mergeOptions(parent, child.extends, vm)
     }
     if (child.mixins) {
+      // 对mixins进行一个个的merge
       for (let i = 0, l = child.mixins.length; i < l; i++) {
         parent = mergeOptions(parent, child.mixins[i], vm)
       }
@@ -434,8 +445,10 @@ export function mergeOptions (
     }
   }
   //针对不同的类型，调用不同的策略进行merge
+  //并且可以通过 config.optionMergeStrategies 来定制化策略
   function mergeField (key) {
     const strat = strats[key] || defaultStrat
+    // 该文件内容中，对各个不同类型均进行了mixin操作
     options[key] = strat(parent[key], child[key], vm, key)
   }
   return options

@@ -89,7 +89,7 @@
 |  |  |  ├── index.js
 |  |  |  ├── lang.js
 |  |  |  ├── next-tick.js - nextTick的实现，从promise、MutationObserver、setImmediate、setTimeout依次降级
-|  |  |  ├── options.js
+|  |  |  ├── options.js - mixin依赖的 mergeOptions 方法的具体实现，
 |  |  |  ├── perf.js
 |  |  |  └── props.js
 |  |  └── vdom - 实现virtual dom的代码
