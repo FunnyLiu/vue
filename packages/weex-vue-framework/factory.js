@@ -4166,6 +4166,7 @@ function initVirtualComponent (options) {
   initRender(vm);
   callHook(vm, 'beforeCreate');
   initInjections(vm); // resolve injections before data/props
+  // 初始化state，从此beforeCreate后的生命周期阶段可以拿到data
   initState(vm);
   initProvide(vm); // resolve provide after data/props
   callHook(vm, 'created');

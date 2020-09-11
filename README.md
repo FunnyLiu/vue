@@ -324,7 +324,27 @@ init包含了initLifecycle、initEvents、initRender、initInjections、initStat
 
 整个组件的生命周期走完。
 
+## nextTick的原理
 
+nextTick的实现在next-tick.js中，其流程：
+
+1、把回调函数放入callbacks等待执行；
+
+2、将执行函数放到微任务或者宏任务中；
+
+3、事件循环到了微任务或者宏任务，执行函数依次执行callbacks中的回调。
+
+执行时通过promise、MutationObserver、setImmediate、setTimeout依次降级。
+
+其他需要注意的点：
+
+1、nextTick是在setTimeout之前执行，浏览器大部分都支持Promise,then，所以nextTick肯定是微任务，而setTimeout是宏任务；
+
+2、nextTick 没有cb，返回new Promise，所以nextTick不传入函数，后面可以连接then
+
+3、如果代码中使用了多个nextTick，按照顺序执行的
+
+4、可以看出来nextTick是对setTimeout进行了多种兼容性的处理，宽泛的也可以理解为将回调函数放入setTimeout中执行。但为什么不直接使用setTimeout呢？setTimeout是宏任务，在下一个时间循环中调用。
 
 
 ## 外部模块依赖
