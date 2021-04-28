@@ -347,6 +347,14 @@ nextTick的实现在next-tick.js中，其流程：
 4、可以看出来nextTick是对setTimeout进行了多种兼容性的处理，宽泛的也可以理解为将回调函数放入setTimeout中执行。但为什么不直接使用setTimeout呢？setTimeout是宏任务，在下一个时间循环中调用。
 
 
+
+## new Vue在做什么？
+
+
+Vue 初始化主要就干了几件事情，合并配置，初始化生命周期，初始化事件中心，初始化渲染，初始化 data、props、computed、watcher 等等。具体源码位于src/core/instance/init.js。
+
+
+
 ## 外部模块依赖
 
 请在： http://npm.broofa.com?q=vue 查看
