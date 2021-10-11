@@ -33,7 +33,7 @@ export default function model (
       )
     }
   }
-
+  // 解析v-model
   if (el.component) {
     genComponentModel(el, value, modifiers)
     // component v-model doesn't need extra runtime
@@ -45,6 +45,7 @@ export default function model (
   } else if (tag === 'input' && type === 'radio') {
     genRadioModel(el, value, modifiers)
   } else if (tag === 'input' || tag === 'textarea') {
+    // 表单dom input
     genDefaultModel(el, value, modifiers)
   } else if (!config.isReservedTag(tag)) {
     genComponentModel(el, value, modifiers)
@@ -123,7 +124,7 @@ function genSelect (
   code = `${code} ${genAssignmentCode(value, assignment)}`
   addHandler(el, 'change', code, null, true)
 }
-
+// 处理v-model的最基本款
 function genDefaultModel (
   el: ASTElement,
   value: string,
@@ -166,7 +167,7 @@ function genDefaultModel (
   if (needCompositionGuard) {
     code = `if($event.target.composing)return;${code}`
   }
-
+  // 给input增加value和事件
   addProp(el, 'value', `(${value})`)
   addHandler(el, event, code, null, true)
   if (trim || number) {

@@ -324,7 +324,7 @@ init包含了initLifecycle、initEvents、initRender、initInjections、initStat
 
 整个组件的生命周期走完。
 
-## nextTick的原理
+### nextTick的原理
 
 nextTick的实现在next-tick.js中，其流程：
 
@@ -348,10 +348,44 @@ nextTick的实现在next-tick.js中，其流程：
 
 
 
-## new Vue在做什么？
+### new Vue在做什么？
 
 
 Vue 初始化主要就干了几件事情，合并配置，初始化生命周期，初始化事件中心，初始化渲染，初始化 data、props、computed、watcher 等等。具体源码位于src/core/instance/init.js。
+
+### v-model的原理
+
+
+一则语法糖，相当于 v-bind:value="xxx" 和 @input，意思是绑定了一个 value 属性的值，子组件可对value 属性监听，通过$emit('input', xxx)的方式给父组件通讯。自己实现model 方式的组件也是这样的思路。
+
+自定义事件也可以用于创建支持 v-model 的自定义输入组件。记住：
+
+``` html
+
+<input v-model="searchText">
+```
+
+等价于：
+
+``` html
+<input
+  v-bind:value="searchText"
+  v-on:input="searchText = $event.target.value"
+>
+```
+
+当用在组件上时，v-model 则会这样：
+
+``` html
+<custom-input
+  v-bind:value="searchText"
+  v-on:input="searchText = $event"
+></custom-input>
+```
+
+[具体源码实现](https://github.com/FunnyLiu/vue/blob/readsource/src/platforms/web/compiler/directives/model.js#L127)
+
+
 
 
 
